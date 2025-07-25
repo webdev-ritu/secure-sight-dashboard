@@ -1,5 +1,6 @@
 'use client';
 
+import React from "react";
 import { useState, ReactNode } from 'react';
 import { ChevronRight, Activity, Settings, Bell, Camera } from 'lucide-react';
 import styles from './custom-tabs.module.css';
