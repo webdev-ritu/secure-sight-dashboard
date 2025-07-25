@@ -1,6 +1,7 @@
 import styles from './camera-feed.module.css';
 import { Video, RefreshCw, Maximize, Minimize, Circle, Wifi, WifiOff, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface Camera {
   id: number;
@@ -114,10 +115,12 @@ export function CameraFeed({ incident, cameras, onSelectCamera, onRefresh }: Cam
         </div>
         
         <div className={styles.feedContainer}>
-          <img
+          <Image
             src={incident.thumbnailUrl}
             alt={`Live feed from ${incident.camera.name}`}
             className={styles.mainImage}
+            width={640}
+            height={360}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src = '/default-camera.jpg';
               (e.currentTarget as HTMLImageElement).className = `${styles.mainImage} ${styles.fallbackImage}`;
@@ -149,14 +152,12 @@ export function CameraFeed({ incident, cameras, onSelectCamera, onRefresh }: Cam
               aria-label={`Switch to ${camera.name} camera`}
             >
               <div className={styles.thumbnailImageContainer}>
-                <img
-                  src={camera.thumbnailUrl}
+                <Image
+                  src={camera.thumbnailUrl && camera.thumbnailUrl.trim() !== "" ? camera.thumbnailUrl : "/default-camera.jpg"}
                   alt={`Thumbnail for ${camera.name}`}
                   className={styles.thumbnailImage}
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = '/default-camera.jpg';
-                    (e.currentTarget as HTMLImageElement).className = `${styles.thumbnailImage} ${styles.fallbackImage}`;
-                  }}
+                  width={100}
+                  height={75}
                 />
                 <div className={`${styles.cameraStatus} ${
                   camera.status === 'offline' ? styles.offline : styles.online

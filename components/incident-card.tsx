@@ -2,6 +2,9 @@ import { IncidentWithCamera } from '@/types';
 import { format } from 'date-fns';
 import { AlertCircle, CheckCircle2, Clock, MapPin, Video, Loader2 } from 'lucide-react';
 import styles from './incident-card.module.css';
+import Image from 'next/image';
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 interface IncidentCardProps {
   incident: IncidentWithCamera;
@@ -105,17 +108,44 @@ const Button = ({
   );
 };
 
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const incidentId = parseInt(id, 10);
+  if (isNaN(incidentId)) {
+    return NextResponse.json(
+      { error: 'Invalid incident ID' },
+      { status: 400 }
+    );
+  }
+  try {
+    const incident = await prisma.incident.update({
+      where: { id: incidentId },
+      data: { resolved: true },
+      include: { camera: true },
+    });
+    return NextResponse.json(incident);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: 'Failed to resolve incident' },
+      { status: 500 }
+    );
+  }
+}
+
 export function IncidentCard({ incident, onResolve, isResolving }: IncidentCardProps) {
   return (
     <div className={`${styles.card} ${incident.resolved ? styles.resolved : styles.active}`}>
       <div className={styles.imageContainer}>
-        <img
-          src={incident.thumbnailUrl} 
+        <Image
+          src={incident.thumbnailUrl && incident.thumbnailUrl.trim() !== "" ? incident.thumbnailUrl : "/default-thumbnail.jpg"}
           alt={`Incident at ${incident.camera.location}`}
           className={styles.image}
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = '/default-thumbnail.jpg';
-          }}
+          width={300}
+          height={169}
         />
         <div className={`${styles.incidentBadge} ${incident.resolved ? styles.resolvedBadge : styles.activeBadge}`}>
           {incident.resolved ? (
