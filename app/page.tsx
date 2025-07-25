@@ -50,7 +50,7 @@ export default function Dashboard() {
     }
     
     fetchData();
-  }, []);
+  }, [selectedIncident]);
 
   const handleResolve = async (id: number) => {
     setIsResolving(true);
