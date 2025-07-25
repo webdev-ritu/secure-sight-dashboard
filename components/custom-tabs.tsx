@@ -31,8 +31,10 @@ export function Tabs({ defaultValue, children }: TabsProps) {
   const childrenWithProps = React.Children.map(children, (child) => {
     if (React.isValidElement(child)) {
       if (child.type === TabsList) {
-        return React.cloneElement(child, {
-          children: React.Children.map(child.props.children, (tabTrigger) => {
+        return React.cloneElement(
+          child,
+          {},
+          React.Children.map(child.props.children, (tabTrigger) => {
             if (React.isValidElement(tabTrigger)) {
               return React.cloneElement(tabTrigger, {
                 active: activeTab === tabTrigger.props.value,
@@ -42,7 +44,7 @@ export function Tabs({ defaultValue, children }: TabsProps) {
             }
             return tabTrigger;
           })
-        });
+        );
       } else if (child.type === TabsContent) {
         return React.cloneElement(child, {
           active: activeTab === child.props.value
