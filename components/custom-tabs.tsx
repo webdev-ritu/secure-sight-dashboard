@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ReactNode } from 'react';
+import React, { useState, ReactNode } from 'react';
 import { ChevronRight, Activity, Settings, Bell, Camera } from 'lucide-react';
 import styles from './custom-tabs.module.css';
 
@@ -30,21 +30,21 @@ export function Tabs({ defaultValue, children }: TabsProps) {
   const childrenWithProps = React.Children.map(children, (child) => {
     if (React.isValidElement(child)) {
       if (child.type === TabsList) {
-        return React.cloneElement(child, {
-          children: React.Children.map(child.props.children, (tabTrigger) => {
+        return React.cloneElement(child as React.ReactElement<TabsListProps>, {
+          children: React.Children.map((child.props as TabsListProps).children, (tabTrigger) => {
             if (React.isValidElement(tabTrigger)) {
-              return React.cloneElement(tabTrigger, {
-                active: activeTab === tabTrigger.props.value,
-                icon: getTabIcon(tabTrigger.props.value),
-                onClick: () => setActiveTab(tabTrigger.props.value)
+              return React.cloneElement(tabTrigger as React.ReactElement<TabsTriggerProps>, {
+                active: activeTab === (tabTrigger.props as TabsTriggerProps).value,
+                icon: getTabIcon((tabTrigger.props as TabsTriggerProps).value),
+                onClick: () => setActiveTab((tabTrigger.props as TabsTriggerProps).value)
               });
             }
             return tabTrigger;
           })
         });
       } else if (child.type === TabsContent) {
-        return React.cloneElement(child, {
-          active: activeTab === child.props.value
+        return React.cloneElement(child as React.ReactElement<TabsContentProps>, {
+          active: activeTab === (child.props as TabsContentProps).value
         });
       }
     }
