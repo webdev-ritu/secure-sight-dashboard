@@ -34,21 +34,33 @@ export function Tabs({ defaultValue, children }: TabsProps) {
         return React.cloneElement(
           child,
           {},
-          React.Children.map(child.props.children, (tabTrigger) => {
-            if (React.isValidElement(tabTrigger)) {
-              return React.cloneElement(tabTrigger, {
-                active: activeTab === tabTrigger.props.value,
-                icon: getTabIcon(tabTrigger.props.value),
-                onClick: () => setActiveTab(tabTrigger.props.value)
-              });
+          React.Children.map((child as React.ReactElement<TabsListProps>).props.children, (tabTrigger) => {
+            if (
+              React.isValidElement(tabTrigger) &&
+              typeof tabTrigger.type === "function" &&
+              tabTrigger.type.name === "TabsTrigger"
+            ) {
+              const { value } = (tabTrigger as React.ReactElement<TabsTriggerProps>).props;
+              return React.cloneElement(
+                tabTrigger as React.ReactElement<TabsTriggerProps>,
+                {
+                  active: activeTab === value,
+                  icon: getTabIcon(value),
+                  onClick: () => setActiveTab(value)
+                }
+              );
             }
             return tabTrigger;
           })
         );
       } else if (child.type === TabsContent) {
-        return React.cloneElement(child, {
-          active: activeTab === child.props.value
-        });
+        const { value } = (child as React.ReactElement<TabsContentProps>).props;
+        return React.cloneElement(
+          child as React.ReactElement<TabsContentProps>,
+          {
+            active: activeTab === value
+          }
+        );
       }
     }
     return child;
