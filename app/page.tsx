@@ -1,95 +1,168 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
 
-export default function Home() {
+import { useEffect, useState } from 'react';
+import { Navbar } from '@/components/navbar';
+import { IncidentCard } from '@/components/incident-card';
+import { CameraFeed } from '@/components/camera-feed';
+import { Timeline } from '@/components/timeline';
+import { IncidentWithCamera } from '@/types';
+import { Activity, AlertCircle, Clock, Loader2 } from 'lucide-react';
+import styles from './page.module.css';
+
+export default function Dashboard() {
+  const [incidents, setIncidents] = useState<IncidentWithCamera[]>([]);
+  const [selectedIncident, setSelectedIncident] = useState<IncidentWithCamera | null>(null);
+  const [isResolving, setIsResolving] = useState(false);
+  const [cameras, setCameras] = useState<{ id: number; name: string; location: string; thumbnailUrl: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/incidents?resolved=false');
+        const data: IncidentWithCamera[] = await response.json();
+        setIncidents(data);
+        
+        if (data.length > 0 && !selectedIncident) {
+          setSelectedIncident(data[0]);
+        }
+        
+        // Get unique cameras
+        const uniqueCameras = data.reduce((acc: { id: number; name: string; location: string; thumbnailUrl: string }[], incident) => {
+          if (!acc.some(cam => cam.id === incident.camera.id)) {
+            acc.push({
+              id: incident.camera.id,
+              name: incident.camera.name,
+              location: incident.camera.location,
+              thumbnailUrl: incident.camera.thumbnailUrl
+            });
+          }
+          return acc;
+        }, []);
+        
+        setCameras(uniqueCameras);
+      } catch (error) {
+        console.error('Error fetching incidents:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    fetchData();
+  }, []);
+
+  const handleResolve = async (id: number) => {
+    setIsResolving(true);
+    try {
+      const response = await fetch(`/api/incidents/${id}/resolve`, {
+        method: 'PATCH',
+      });
+      const updatedIncident: IncidentWithCamera = await response.json();
+      
+      setIncidents(prev => 
+        prev.map(incident => 
+          incident.id === id ? updatedIncident : incident
+        )
+      );
+      
+      if (selectedIncident?.id === id) {
+        const nextIncident = incidents.find(i => !i.resolved && i.id !== id);
+        setSelectedIncident(nextIncident || null);
+      }
+    } catch (error) {
+      console.error('Error resolving incident:', error);
+    } finally {
+      setIsResolving(false);
+    }
+  };
+
+  const handleSelectCamera = (cameraId: number) => {
+    const incidentForCamera = incidents.find(incident => 
+      incident.cameraId === cameraId && !incident.resolved
+    );
+    if (incidentForCamera) {
+      setSelectedIncident(incidentForCamera);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <Loader2 size={32} className={styles.spinner} />
+        <p>Loading security dashboard...</p>
+      </div>
+    );
+  }
+
+  if (!selectedIncident) {
+    return (
+      <div className={styles.emptyState}>
+        <AlertCircle size={48} className={styles.emptyIcon} />
+        <h2>No active incidents</h2>
+        <p>All security systems are currently normal</p>
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <div className={styles.app}>
+      <Navbar />
+      
+      <div className={styles.dashboardContainer}>
+        <div className={styles.gridLayout}>
+          {/* Left side - Camera feed */}
+          <div className={styles.mainContent}>
+            <div className={styles.contentHeader}>
+              <h2 className={styles.sectionTitle}>
+                <Activity size={20} className={styles.titleIcon} />
+                Live Monitoring
+              </h2>
+              <div className={styles.statsBadge}>
+                {incidents.filter(i => !i.resolved).length} active incidents
+              </div>
+            </div>
+            
+            <CameraFeed 
+              incident={selectedIncident} 
+              cameras={cameras}
+              onSelectCamera={handleSelectCamera}
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+            <Timeline incidents={incidents} />
+          </div>
+          
+          {/* Right side - Incident list */}
+          <div className={styles.sidebar}>
+            <div className={styles.sidebarHeader}>
+              <h2 className={styles.sidebarTitle}>
+                <Clock size={20} className={styles.titleIcon} />
+                Recent Incidents
+              </h2>
+              <div className={styles.timeDisplay}>
+                {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            </div>
+            
+            <div className={styles.incidentsContainer}>
+              {incidents.length > 0 ? (
+                incidents.map(incident => (
+                  <IncidentCard
+                    key={incident.id}
+                    incident={incident}
+                    onResolve={handleResolve}
+                    isResolving={isResolving && incident.id === selectedIncident.id}
+                  />
+                ))
+              ) : (
+                <div className={styles.noIncidents}>
+                  <AlertCircle size={24} />
+                  <p>No incidents detected</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }

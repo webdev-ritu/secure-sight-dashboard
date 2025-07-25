@@ -1,0 +1,437 @@
+/* camera-feed.module.css */
+.cameraFeed {
+  --primary: #3b82f6;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --dark: #0f172a;
+  --darker: #020617;
+  --light: #f8fafc;
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  height: 100%;
+  background: linear-gradient(135deg, var(--darker), var(--dark));
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  position: relative;
+}
+
+.cameraFeed.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  grid-template-columns: 1fr;
+  border-radius: 0;
+  background: var(--dark);
+}
+
+.mainFeed {
+  display: flex;
+  flex-direction: column;
+  background: var(--glass);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+}
+
+.feedHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: rgba(15, 23, 42, 0.5);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.cameraInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cameraName {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cameraIcon {
+  color: var(--primary);
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.statusBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.statusBadge.online {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.statusBadge.offline {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.pulseDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--success);
+  animation: pulse 2s infinite;
+}
+
+.feedControls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.controlButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+  color: white;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.controlButton:hover {
+  background: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.controlButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.controlButton:disabled:hover {
+  transform: none;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dark);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+  z-index: 10;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--glass-border);
+}
+
+.controlButton:hover .tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0.5rem);
+}
+
+.feedContainer {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(45deg, #0a0e17, #131a2b);
+  overflow: hidden;
+}
+
+.mainImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: var(--transition);
+  z-index: 1;
+}
+
+.fallbackImage {
+  object-fit: cover;
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  gap: 1rem;
+  z-index: 2;
+}
+
+.loadingText {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.timeStamp {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background: rgba(15, 23, 42, 0.8);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  border: 1px solid var(--glass-border);
+  z-index: 3;
+}
+
+.thumbnailGrid {
+  display: flex;
+  flex-direction: column;
+  background: var(--glass);
+
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+}
+
+.thumbnailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: rgba(15, 23, 42, 0.5);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.thumbnailTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cameraCount {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+}
+
+.thumbnailContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.thumbnail {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.thumbnail:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.thumbnail.active {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.thumbnail.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid var(--primary);
+  border-radius: 0.5rem;
+  pointer-events: none;
+  animation: pulseBorder 2s infinite;
+}
+
+.thumbnailImageContainer {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.thumbnailImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.thumbnail:hover .thumbnailImage {
+  transform: scale(1.05);
+}
+
+.cameraStatus {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.cameraStatus.online {
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.5);
+}
+
+.cameraStatus.offline {
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+}
+
+.thumbnailInfo {
+  padding: 0.75rem 0.5rem;
+}
+
+.thumbnailLabel {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thumbnailLocation {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cameraIcon, .locationIcon {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.locationIcon {
+  color: #64748b;
+}
+
+/* Animations */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0.6; transform: scale(0.9); }
+}
+
+@keyframes pulseBorder {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .cameraFeed {
+    grid-template-columns: 1fr;
+  }
+
+  .thumbnailContainer {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .feedHeader {
+    padding: 0.75rem 1rem;
+  }
+
+  .thumbnailHeader {
+    padding: 0.75rem 1rem;
+  }
+
+  .thumbnailContainer {
+    padding: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}

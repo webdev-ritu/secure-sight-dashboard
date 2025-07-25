@@ -1,0 +1,259 @@
+.navbar {
+  --primary: #3b82f6;
+  --danger: #ef4444;
+  --dark: #1a1a1a;
+  --light: #f8fafc;
+  --glass: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 2rem;
+  background: linear-gradient(90deg, #2b2b2b, #1a1a1a);
+  box-shadow: var(--shadow);
+  border-bottom: 1px solid var(--glass-border);
+  height: 70px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: var(--transition);
+}
+
+.navbar.scrolled {
+  height: 60px;
+  background: rgba(26, 26, 26, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.navbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brandContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: var(--transition);
+}
+
+.brandContainer:hover {
+  transform: translateX(-2px);
+}
+
+.brand {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #ffffff, #e0e0e0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: var(--transition);
+}
+
+.brandIcon {
+  color: #ff3b3b;
+  width: 28px;
+  height: 28px;
+  transition: var(--transition);
+}
+
+.brandContainer:hover .brandIcon {
+  transform: rotate(15deg) scale(1.1);
+  color: #ff1a1a;
+}
+
+.navbarRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.iconButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  color: #e6e8ec;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.iconButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  color: white;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  transition: var(--transition);
+}
+
+.iconButton:hover .icon {
+  transform: scale(1.1);
+}
+
+.notificationButton {
+  position: relative;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: var(--danger);
+  color: white;
+  border-radius: 9999px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  border: 2px solid var(--dark);
+  animation: pulse 2s infinite;
+}
+
+.menuButton {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  z-index: 110;
+}
+
+.mobileMenu {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #2b2b2b, #1a1a1a);
+  padding: 1rem 2rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: var(--transition);
+  z-index: 90;
+}
+
+.mobileMenu.open {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.mobileNavItem {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.mobileNavItem:last-child {
+  border-bottom: none;
+}
+
+.mobileNavItem:hover {
+  color: var(--primary);
+  transform: translateX(5px);
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 0.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+  
+  .menuButton {
+    display: block;
+  }
+  
+  .navbarRight {
+    display: none;
+  }
+  
+  .brand {
+    font-size: 1.2rem;
+  }
+}
+
+/* Dark mode toggle (optional) */
+.themeToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.toggleSwitch {
+  position: relative;
+  width: 40px;
+  height: 20px;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #3b3b3b;
+  transition: var(--transition);
+  border-radius: 20px;
+}
+
+.toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: var(--transition);
+  border-radius: 50%;
+}
+
+input:checked + .toggleSlider {
+  background-color: var(--primary);
+}
+
+input:checked + .toggleSlider:before {
+  transform: translateX(20px);
+}

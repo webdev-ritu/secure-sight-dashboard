@@ -1,0 +1,158 @@
+.container {
+  background-color: rgb(119, 118, 118);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #000000;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: #f1f1f1;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.timeline {
+  position: relative;
+  height: 40px;
+  background-color: #484949;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.hourMarker {
+  position: absolute;
+  height: 100%;
+  border-right: 1px solid #a0a0a0;
+  width: 0;
+}
+
+.hourLabel {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: #718096;
+}
+
+.currentTimeIndicator {
+  position: absolute;
+  top: 0;
+  /* Set left dynamically via inline style or JS, e.g. style={{ left: `${percent}%` }} */
+  height: 100%;
+  width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.clockIcon {
+  color: #ef4444;
+  margin-bottom: 4px;
+}
+
+.timeLine {
+  height: 100%;
+  width: 1px;
+  background-color: #ef4444;
+}
+
+.incidentBar {
+  position: absolute;
+  height: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.incidentBar:hover {
+  height: 20px;
+  transform: translateY(-50%) scaleY(1.1);
+}
+
+.active {
+  background-color: #fecaca;
+  border: 1px solid #ef4444;
+}
+
+.resolved {
+  background-color: #bbf7d0;
+  border: 1px solid #22c55e;
+}
+
+.activeIcon {
+  color: #ef4444;
+}
+
+.resolvedIcon {
+  color: #22c55e;
+}
+
+.incidentTooltip {
+  visibility: hidden;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(65, 64, 64);
+  padding: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #070707;
+  width: max-content;
+  max-width: 200px;
+  z-index: 10;
+  font-size: 0.75rem;
+}
+
+.incidentBar:hover .incidentTooltip {
+  visibility: visible;
+}
+
+.tooltipHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  color: #4a5568;
+}
+
+.incidentType {
+  color: #1e40af;
+}
