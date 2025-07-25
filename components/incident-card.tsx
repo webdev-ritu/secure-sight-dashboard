@@ -2,7 +2,6 @@ import { IncidentWithCamera } from '@/types';
 import { format } from 'date-fns';
 import { AlertCircle, CheckCircle2, Clock, MapPin, Video, Loader2 } from 'lucide-react';
 import styles from './incident-card.module.css';
-import Image from 'next/image';
 
 interface IncidentCardProps {
   incident: IncidentWithCamera;
@@ -110,7 +109,7 @@ export function IncidentCard({ incident, onResolve, isResolving }: IncidentCardP
   return (
     <div className={`${styles.card} ${incident.resolved ? styles.resolved : styles.active}`}>
       <div className={styles.imageContainer}>
-        <Image 
+        <img
           src={incident.thumbnailUrl} 
           alt={`Incident at ${incident.camera.location}`}
           className={styles.image}
